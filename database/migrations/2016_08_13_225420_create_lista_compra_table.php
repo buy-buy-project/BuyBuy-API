@@ -22,7 +22,6 @@ class CreateListaCompraTable extends Migration
         Schema::table('lista_compra', function (Blueprint $table) {
             $table->integer('consumidor_id')
                 ->unsigned()
-                ->nullable()
                 ->after('confirmada');
                 
             $table->foreign('consumidor_id')->references('id')->on('consumidor');
