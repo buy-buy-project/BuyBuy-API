@@ -14,9 +14,10 @@ class CreateListaCompraTable extends Migration
     {
         Schema::create('lista_compra', function (Blueprint $table) {
             $table->increments('id');
-            $table->datetime('data_lista');
+            $table->date('data_lista');
             $table->tinyInteger('recomendada')->default(0);
             $table->tinyInteger('confirmada')->default(0);
+            $table->timestamps();
         });
 
         Schema::table('lista_compra', function (Blueprint $table) {
