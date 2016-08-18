@@ -40,7 +40,7 @@ class ProdutoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Produto::create($request->all());
     }
 
     /**
@@ -76,7 +76,9 @@ class ProdutoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $produto = Produto::findOrFail($id);
+        
+        $produto->update($request->all());
     }
 
     /**
@@ -87,6 +89,8 @@ class ProdutoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $produto = Produto::findOrFail($id);
+        
+        $produto->delete();
     }
 }
