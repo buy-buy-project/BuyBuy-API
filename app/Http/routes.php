@@ -16,3 +16,5 @@ Route::get('/', function () {
 });
 
 Route::resource('consumidor', 'ConsumidorController');
+
+Route::resource('produto', 'ProdutoController');
