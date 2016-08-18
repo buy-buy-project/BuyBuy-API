@@ -8,4 +8,8 @@ class Consumidor extends Model
 {
 	protected $table = 'consumidor';
     protected $fillable = ['nome'];
+
+    public function listasCompra() {
+        return $this->hasMany('App\Models\ListaCompra');
+    }
 }
