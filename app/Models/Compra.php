@@ -12,4 +12,9 @@ class Compra extends Model
     public function listaCompra() {
         return $this->belongsTo('App\Models\ListaCompra');
     }
+
+    public function listaConsumidor() {
+    	return $this->listaCompra()->where('consumidor_id', 1);
+    }
 }
+

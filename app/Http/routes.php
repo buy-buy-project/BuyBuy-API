@@ -22,3 +22,5 @@ Route::resource('produto', 'ProdutoController');
 Route::resource('compra', 'CompraController');
 
 Route::resource('listaCompra', 'ListaCompraController');
+
+Route::get('markov', 'MarkovController@index');
