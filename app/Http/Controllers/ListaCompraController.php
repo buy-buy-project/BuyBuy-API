@@ -10,6 +10,8 @@ use App\Models\ListaCompra;
 
 use App\Models\Consumidor;
 
+use App\Models\Compra;
+
 class ListaCompraController extends Controller
 {
     /**
@@ -51,13 +53,15 @@ class ListaCompraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($idConsumidor)
     {
-        $listaCompra = ListaCompra::findOrFail($id);
+        $listaCompra = ListaCompra::where('consumidor_id', $idConsumidor)->get();
 
-        $consumidor = Consumidor::findOrFail($listaCompra->consumidor_id);
-
-        $listaCompra->consumidor()->associate($consumidor);
+        foreach ($listaCompra as $lista) {
+            $consumidor = Consumidor::findOrFail($idConsumidor);
+            $lista->consumidor()->associate($consumidor);
+            $lista->compras = $lista->compras()->get();
+        }
 
         return $listaCompra->toJson();
     }

@@ -12,4 +12,8 @@ class ListaCompra extends Model
     public function consumidor() {
         return $this->belongsTo('App\Models\Consumidor');
     }
+
+    public function compras() {
+    	return $this->hasMany('App\Models\Compra');
+    }
 }

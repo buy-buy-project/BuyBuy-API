@@ -26,7 +26,7 @@ class CompraSeeder extends Seeder
             	[
             		'quantidade' => $compra['quantidade'],
             		'produto_id' => $compra['produtoID'],
-            		'lista_id' => $compra['listaID']
+            		'lista_compra_id' => $compra['listaID']
             	]
             )->save();
         }
