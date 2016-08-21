@@ -10,9 +10,14 @@ use App\Models\Consumidor;
 use App\Models\Produto;
 use App\Models\ListaCompra;
 use App\Models\Compra;
+use App\Models\Markov;
+
+use DateTime;
 
 class MarkovController extends Controller
 {
+
+    const QTD_DIAS = 90;
 
 	/**
      * Método construtor
@@ -26,38 +31,66 @@ class MarkovController extends Controller
     }
 
     /**
-     * Inicio do Markov.
+     * Gera rede markoviana
      *
      * @return void
      */
     public function index()
     {
         $compras = null;
-        $data90dias = date('Y-m-d', strtotime("-90 days"));
+        $historico = $this->inicializaArray();
         $estados = [];
+        $transicoes = [];
+        $dataHoje = new DateTime(date('Y-m-d', strtotime("now")));
 
-        //$compra = Compra::with('listaCompra.consumidor')->get();
-
-        /*$compra = Compra::with(['listaCompra' => function ($query) {
-		    $query->where('consumidor_id', '=', 2);
-		}])->where('consumidor_id', '=', 2)->get();*/
-
-		// tentar fazer igual ao show da controller
-
-		dd($compra);
-
-        /*foreach ($this->consumidores as $consumidor) {
-        	$lista->consumidor()->associate($consumidor);
-
-        	$listasCompra = ListaCompra::where('consumidor_id', $consumidor->id)
-    			->where('data_lista', '>=', $data90dias)
-    			->get();
-
+        foreach ($this->consumidores as $consumidor) {
         	foreach ($this->produtos as $produto) {
-        		foreach ($listasCompra as $lista) {
-		            $lista->compras = $lista->compras()->where('produto_id', $produto->id)->get();
-				}
+                $compras = Markov::comprasDoConsumidorPorProduto($consumidor->id, $produto->id);
+
+                // Gera o historico
+                foreach ($compras as $compra) {
+                    $dataCompra = new DateTime($compra->data_lista);
+                    $t = self::QTD_DIAS - ($dataHoje->diff($dataCompra)->days);
+                    $historico[$t] = $compra->quantidade;
+                }
+
+                // Gera os estados
+                foreach ($historico as $quantidade) {
+                    if($quantidade != -1) {
+                        if(!isset($estados[$quantidade]))
+                            $estados[$quantidade] = [];
+                    }
+                }
+
+                // Gera as transições
+                $transicoes = $estados;
+                foreach ($historico as $t => $quantidade) {
+                    if($quantidade != -1) {
+                        $estadoAtual = $quantidade;
+
+                        for($deltaT = 1; $deltaT <= self::QTD_DIAS; $deltaT++) {
+                            for($i = $t+1; $i <= self::QTD_DIAS; $i = $i + $deltaT) {
+                                $proximaQuantidade = $historico[$i];
+
+                                if($proximaQuantidade != -1 && !isset($transicoes[$estadoAtual][$proximaQuantidade])) {
+                                    $transicoes[$estadoAtual][$proximaQuantidade] = 0;
+                                }
+
+                            }
+                        }
+                    }
+                }
+
         	}
-        }*/
+        }
     }
+
+    private function inicializaArray() {
+        $array = [];
+        for($i = 1; $i <= self::QTD_DIAS; $i++) {
+            $array[$i] = -1;
+        }
+        return $array;
+    }
+
 }
