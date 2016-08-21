@@ -38,13 +38,13 @@ class MarkovController extends Controller
     public function index()
     {
         $compras = null;
-        $historico = $this->inicializaArray();
-        $estados = [];
-        $transicoes = [];
         $dataHoje = new DateTime(date('Y-m-d', strtotime("now")));
 
         foreach ($this->consumidores as $consumidor) {
         	foreach ($this->produtos as $produto) {
+                $historico = $this->inicializaArray();
+                $estados = [];
+                $transicoes = [];
                 $compras = Markov::comprasDoConsumidorPorProduto($consumidor->id, $produto->id);
 
                 // Gera o historico
