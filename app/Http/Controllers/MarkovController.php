@@ -64,20 +64,49 @@ class MarkovController extends Controller
 
                 // Gera as transições
                 $transicoes = $estados;
+                $totalPorTransicao = $estados;
                 foreach ($historico as $t => $quantidade) {
                     if($quantidade != -1) {
                         $estadoAtual = $quantidade;
 
                         for($deltaT = 1; $deltaT <= self::QTD_DIAS; $deltaT++) {
                             for($i = $t+1; $i <= self::QTD_DIAS; $i = $i + $deltaT) {
-                                $proximaQuantidade = $historico[$i];
+                                $proximoEstado = $historico[$i];
 
-                                if($proximaQuantidade != -1 && !isset($transicoes[$estadoAtual][$proximaQuantidade])) {
-                                    $transicoes[$estadoAtual][$proximaQuantidade] = 0;
+                                if($proximoEstado != -1 && !isset($transicoes[$estadoAtual][$proximoEstado])) {
+                                    $transicoes[$estadoAtual][$proximoEstado] = [];
+                                    $totalPorTransicao[$estadoAtual][$proximoEstado] = 0;
                                 }
 
                             }
                         }
+
+                    }
+                }
+
+                // Funções de transição
+                $totalPorTransicao = [];
+                foreach($transicoes as $estado => $estadosDeTransicao) {
+                    foreach ($estadosDeTransicao as $estadoTransicaoAtual => $qtdTransicoes) {
+                        $proximoEstado = $estadoTransicaoAtual;
+                        $total = 0;
+
+                        for($deltaT = 1; $deltaT <= self::QTD_DIAS; $deltaT++) {
+                            $totalNoDeltaT = 0;
+                            for($i = 1; $i <= self::QTD_DIAS; $i++) {
+                                $estadoAtualHist = $historico[$i];
+                                $proximoEstadoHist = isset($historico[$i+$deltaT]) ? $historico[$i+$deltaT] : -1;
+
+                                if($estado == $estadoAtualHist && $proximoEstado == $proximoEstadoHist) {
+                                    $totalNoDeltaT += 1;
+                                    $total += 1;
+                                }
+
+                            }
+                            $transicoes[$estado][$proximoEstado][$deltaT] = $totalNoDeltaT;
+                        }
+
+                        $totalPorTransicao[$estado][$proximoEstado] = $total;
                     }
                 }
 
