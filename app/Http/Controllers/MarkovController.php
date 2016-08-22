@@ -14,6 +14,8 @@ use App\Models\Markov;
 
 use DateTime;
 
+use App\Helpers\Bayes;
+
 class MarkovController extends Controller
 {
 
@@ -109,6 +111,8 @@ class MarkovController extends Controller
                         $totalPorTransicao[$estado][$proximoEstado] = $total;
                     }
                 }
+
+                Bayes::inferencia($transicoes, $historico, $totalPorTransicao);
 
         	}
         }
