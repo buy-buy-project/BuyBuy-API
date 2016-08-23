@@ -25,11 +25,21 @@ class Bayes
 
 				$qtdTotalVezesTransicao = isset($totalFuncaoTransicao[$quantidade][$estado]) ? $totalFuncaoTransicao[$quantidade][$estado] : 1;
 
-				$formula *= (1 - ($qtdVezesTransicao/$qtdTotalVezesTransicao) );
+				$formula *= (1 - ($qtdVezesTransicao / $qtdTotalVezesTransicao) );
 			}
 
 			$probabilidades[$estado] = 1 - $formula;
 		}
-		
+
+		// Calcula fator de normalização
+		$somaDasProbabilidades = array_sum($probabilidades);
+		$fatorNormalizacao = 1 / $somaDasProbabilidades;
+
+		// Aplica o fator nas probabilidades
+		array_walk($probabilidades, array('self', 'aplicaFatorNormalizacao'), $fatorNormalizacao);
+	}
+
+	private static function aplicaFatorNormalizacao(&$valor, $indice, $fator) {
+		$valor = ($valor * $fator) * 100;
 	}
 }
