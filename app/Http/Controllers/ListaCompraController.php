@@ -8,10 +8,6 @@ use App\Http\Requests;
 
 use App\Models\ListaCompra;
 
-use App\Models\Consumidor;
-
-use App\Models\Compra;
-
 class ListaCompraController extends Controller
 {
     /**
