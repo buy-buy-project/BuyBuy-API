@@ -53,15 +53,9 @@ class ListaCompraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($idConsumidor)
+    public function show($id)
     {
-        $listaCompra = ListaCompra::where('consumidor_id', $idConsumidor)->get();
-
-        foreach ($listaCompra as $lista) {
-            $consumidor = Consumidor::findOrFail($idConsumidor);
-            $lista->consumidor()->associate($consumidor);
-            $lista->compras = $lista->compras()->get();
-        }
+        $listaCompra = ListaCompra::findOrFail($id);
 
         return $listaCompra->toJson();
     }
