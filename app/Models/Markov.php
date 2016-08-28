@@ -15,7 +15,8 @@ class Markov extends Model
             ->join('lista_compra', 'lista_compra.id', '=', 'compra.lista_compra_id')
             ->where('lista_compra.consumidor_id', $idConsumidor)
             ->where('lista_compra.data_lista', '>=', $data90dias)
-            ->where('compra.produto_id', '>=', $idProduto)
+            ->where('lista_compra.confirmada', '=', 1)
+            ->where('compra.produto_id', '=', $idProduto)
             ->orderBy('lista_compra.data_lista')
             ->get();
 
