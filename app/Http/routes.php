@@ -26,3 +26,8 @@ Route::resource('listaCompra', 'ListaCompraController');
 Route::get('markov', 'MarkovController@index');
 
 Route::get('historico/{idConsumidor}', 'HistoricoController@index');
+
+Route::group(['prefix' => 'experimentos'], function () {
+	Route::get('experimento1', 'ExperimentosController@experimento1');
+});
+

@@ -10,13 +10,18 @@ class Markov
 {
 	const QTD_DIAS = 90;
 
-	public static function aprendizagem($idConsumidor, $idProduto) {
+	public static function aprendizagem($idConsumidor = null, $idProduto = null, $experimento = null) {
 		$compras = null;
         $dataHoje = new DateTime(date('Y-m-d', strtotime("now")));
         $historico = self::inicializaArray();
         $estados = [];
         $transicoes = [];
-        $compras = MarkovModel::comprasDoConsumidorPorProduto($idConsumidor, $idProduto);
+
+        if(!$experimento) {
+            $compras = MarkovModel::comprasDoConsumidorPorProduto($idConsumidor, $idProduto);
+        } else {
+            $compras = json_decode($experimento);
+        }
 
         // Gera o historico
         foreach ($compras as $compra) {
