@@ -15,7 +15,6 @@ class CreateConsumidorTable extends Migration
         Schema::create('consumidor', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome');
-            $table->timestamps();
         });
     }
 
