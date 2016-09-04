@@ -11,7 +11,7 @@ class Bayes
 		$situacoes = [];
 		foreach ($historico as $t => $quantidade) {
 			if($quantidade != -1) {
-				$dt = self::QTD_DIAS - $t;
+				$dt = 1 + self::QTD_DIAS - $t;
 				$situacoes[$dt] = $quantidade;
 			}
 		}

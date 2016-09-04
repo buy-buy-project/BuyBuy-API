@@ -26,7 +26,7 @@ class Markov
         // Gera o historico
         foreach ($compras as $compra) {
             $dataCompra = new DateTime($compra->data_lista);
-            $t = self::QTD_DIAS - ($dataHoje->diff($dataCompra)->days);
+            $t = self::QTD_DIAS + 1 - ($dataHoje->diff($dataCompra)->days);
             $historico[$t] = $compra->quantidade;
         }
 
