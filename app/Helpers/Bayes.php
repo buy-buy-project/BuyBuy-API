@@ -37,6 +37,14 @@ class Bayes
 
 		// Aplica o fator nas probabilidades
 		array_walk($probabilidades, array('self', 'aplicaFatorNormalizacao'), $fatorNormalizacao);
+
+		arsort($probabilidades);
+
+		$quantidadeMaiorProbabilidade = key($probabilidades);
+
+		$maiorProbabilidade = array_shift($probabilidades);
+
+		return [$quantidadeMaiorProbabilidade => $maiorProbabilidade];
 	}
 
 	private static function aplicaFatorNormalizacao(&$valor, $indice, $fator) {
