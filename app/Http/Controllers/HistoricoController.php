@@ -8,6 +8,7 @@ use App\Http\Requests;
 
 use App\Models\ListaCompra;
 use App\Models\Consumidor;
+use App\Models\Produto;
 
 class HistoricoController extends Controller
 {
@@ -22,8 +23,14 @@ class HistoricoController extends Controller
 
         foreach ($listaCompra as $lista) {
             $consumidor = Consumidor::findOrFail($idConsumidor);
-            $lista->consumidor()->associate($consumidor);
+            $lista->consumidor_nome = $consumidor->nome;
             $lista->compras = $lista->compras()->get();
+
+            foreach ($lista->compras as $compra) {
+                $produto = Produto::findOrFail($compra->produto_id);
+                $compra->produto_nome = $produto->nome;
+            }
+
         }
 
         return $listaCompra->toJson();
