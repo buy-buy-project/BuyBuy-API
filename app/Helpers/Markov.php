@@ -12,7 +12,7 @@ class Markov
 
 	public static function aprendizagem($idConsumidor = null, $idProduto = null, $experimento = null) {
 		$compras = null;
-        $dataHoje = new DateTime('2016-09-02');
+        $dataHoje = new DateTime('2016-09-13');
         $historico = self::inicializaArray();
         $estados = [];
         $transicoes = [];
@@ -21,7 +21,6 @@ class Markov
             $compras = MarkovModel::comprasDoConsumidorPorProduto($idConsumidor, $idProduto);
         } else {
             $compras = json_decode($experimento);
-            array_shift($compras);
         }
 
         // Gera o historico
