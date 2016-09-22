@@ -70,11 +70,29 @@ class Bayes
 			foreach ($totalFuncaoTransicao as $estadoAtual => $proximoEstado) {
 				foreach ($proximoEstado as $prox => $valorEstado) {
 					if($prox == $estado) {
-						$formulaTotal += $proximoEstado[$estado];
+						$formulaTotal += $valorEstado;
 					}
 				}
 			}
 
+			if($formulaTotal == 0) {
+				//echo '<pre>'; print_r($historico); echo '</pre>';
+				//echo 'Estado: '. $estado . '<pre>'; print_r($totalFuncaoTransicao); echo '</pre>';
+
+				/*foreach ($totalFuncaoTransicao as $estadoAtual => $proximoEstado) {
+					echo 'estadoAtual: ' . $estadoAtual;
+					echo '<pre>'; print_r($proximoEstado); echo '</pre>';
+					foreach ($proximoEstado as $prox => $valorEstado) {
+						echo 'prox: ' . $prox;
+						echo ' -> valorEstado: ' . $valorEstado . '<br>';
+						if($prox == $estado) {
+							echo '<br>entrou aqui<br>';
+							$formulaTotal += $valorEstado;
+						}
+					}
+				}*/
+			}
+			$formulaTotal = ($formulaTotal == 0) ? 1 : $formulaTotal;
 			$probabilidades[$estado] = $formula / $formulaTotal;
 		}
 
@@ -86,6 +104,12 @@ class Bayes
 		array_walk($probabilidades, array('self', 'aplicaFatorNormalizacao'), $fatorNormalizacao);
 
 		arsort($probabilidades);
+
+		//echo '<pre>'; print_r($probabilidades); echo '</pre>';
+		//echo '<pre>'; print_r($redeMarkov); echo '</pre>';
+		//echo '<pre>'; print_r($totalFuncaoTransicao); echo '</pre>';
+
+		//dd($probabilidades);
 
 		$quantidadeMaiorProbabilidade = key($probabilidades);
 
