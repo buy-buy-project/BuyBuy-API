@@ -32,3 +32,5 @@ Route::group(['prefix' => 'experimentos'], function () {
 	Route::get('experimento2', 'ExperimentosController@experimento2');
 });
 
+Route::get('recomendacao/{idConsumidor}', 'RecomendacaoController@index');
+
