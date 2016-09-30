@@ -60,40 +60,23 @@ class Bayes
 		// Calcula a probabilidade das quantidades
 		$probabilidades = [];
 		foreach($redeMarkov as $estado => $transicoes) {
-			$formulaTotal = 0;
-			$formula = 0;
+			$formula = 1;
 			foreach ($situacoes as $dt => $quantidade) {
 				$qtdVezesTransicao = isset($redeMarkov[$quantidade][$estado][$dt]) ? $redeMarkov[$quantidade][$estado][$dt] : 0;
-				$formula += $qtdVezesTransicao;
-			}
 
-			foreach ($totalFuncaoTransicao as $estadoAtual => $proximoEstado) {
-				foreach ($proximoEstado as $prox => $valorEstado) {
-					if($prox == $estado) {
-						$formulaTotal += $valorEstado;
-					}
+				$qtdTotalVezesTransicao = 0;
+				foreach ($redeMarkov as $estadoTotal => $transicoesTotal) {
+					$qtdTotalVezesTransicao += isset($redeMarkov[$estadoTotal][$estado][$dt]) ? $redeMarkov[$estadoTotal][$estado][$dt] : 0;
 				}
+
+				$qtdTotalVezesTransicao = ($qtdTotalVezesTransicao > 0) ? $qtdTotalVezesTransicao : 1;
+
+				$parcelaProbabilidade = (($qtdVezesTransicao / $qtdTotalVezesTransicao) * log($dt));
+
+				$formula *= (1 - $parcelaProbabilidade);
 			}
 
-			if($formulaTotal == 0) {
-				//echo '<pre>'; print_r($historico); echo '</pre>';
-				//echo 'Estado: '. $estado . '<pre>'; print_r($totalFuncaoTransicao); echo '</pre>';
-
-				/*foreach ($totalFuncaoTransicao as $estadoAtual => $proximoEstado) {
-					echo 'estadoAtual: ' . $estadoAtual;
-					echo '<pre>'; print_r($proximoEstado); echo '</pre>';
-					foreach ($proximoEstado as $prox => $valorEstado) {
-						echo 'prox: ' . $prox;
-						echo ' -> valorEstado: ' . $valorEstado . '<br>';
-						if($prox == $estado) {
-							echo '<br>entrou aqui<br>';
-							$formulaTotal += $valorEstado;
-						}
-					}
-				}*/
-			}
-			$formulaTotal = ($formulaTotal == 0) ? 1 : $formulaTotal;
-			$probabilidades[$estado] = $formula / $formulaTotal;
+			$probabilidades[$estado] = 1 - $formula;
 		}
 
 		// Calcula fator de normalização
@@ -105,11 +88,7 @@ class Bayes
 
 		arsort($probabilidades);
 
-		//echo '<pre>'; print_r($probabilidades); echo '</pre>';
-		//echo '<pre>'; print_r($redeMarkov); echo '</pre>';
-		//echo '<pre>'; print_r($totalFuncaoTransicao); echo '</pre>';
-
-		//dd($probabilidades);
+		dd($probabilidades);
 
 		$quantidadeMaiorProbabilidade = key($probabilidades);
 

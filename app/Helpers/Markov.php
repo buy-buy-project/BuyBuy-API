@@ -12,7 +12,7 @@ class Markov
 
 	public static function aprendizagem($idConsumidor = null, $idProduto = null, $experimento = null) {
 		$compras = null;
-        $dataHoje = new DateTime('2016-09-22');
+        $dataHoje = new DateTime(date('Y-m-d', strtotime('now')));
         $historico = self::inicializaArray();
         $estados = [];
         $transicoes = [];

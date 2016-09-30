@@ -36,7 +36,8 @@ class MarkovController extends Controller
         foreach ($this->consumidores as $consumidor) {
         	foreach ($this->produtos as $produto) {
                 $markov = Markov::aprendizagem($consumidor->id, $produto->id);
-                Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+                //$probabilidade = Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+                $probabilidade = Bayes::inferenciaNova($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
         	}
         }
     }
