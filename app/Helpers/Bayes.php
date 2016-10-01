@@ -71,7 +71,8 @@ class Bayes
 
 				$qtdTotalVezesTransicao = ($qtdTotalVezesTransicao > 0) ? $qtdTotalVezesTransicao : 1;
 
-				$parcelaProbabilidade = (($qtdVezesTransicao / $qtdTotalVezesTransicao) * log($dt));
+				#$parcelaProbabilidade = (($qtdVezesTransicao / $qtdTotalVezesTransicao) * log($dt));
+				$parcelaProbabilidade = (($qtdVezesTransicao / $qtdTotalVezesTransicao) * log($dt+1)/log(2));
 
 				$formula *= (1 - $parcelaProbabilidade);
 			}
