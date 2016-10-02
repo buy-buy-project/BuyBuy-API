@@ -47,6 +47,51 @@ class Bayes
 		return [$quantidadeMaiorProbabilidade => $maiorProbabilidade];
 	}
 
+
+        public static function probUmaTransicao($redeMarkov, $from, $to, $dt){
+            //Somando Prob chegar em $to
+            $soma = 0;
+            foreach($redeMarkov as $f => $t){
+                $soma += isset($t[$to][$dt]) ? $t[$to][$dt] : 0;
+            }
+            return ($soma==0 || !isset($redeMarkov[$from][$to][$dt])) ? 0 : $redeMarkov[$from][$to][$dt]/$soma;
+        }
+
+	public static function inferenciaGuilherme($redeMarkov, $historico, $totalFuncaoTransicao) {
+            #dd(self::probUmaTransicao($redeMarkov, 5, 5, 2));
+            $estados = array_keys($redeMarkov);
+            $probs = [];
+
+            $maxProb = -1;
+            $maxEstado = 0;
+
+            foreach($estados as $destino){
+                $termos = [];
+                foreach(range(1,90) as $dt){
+                    //normalizando
+                    $termos[$dt] = self::probUmaTransicao($redeMarkov, $historico[91-$dt], $destino, $dt);
+                }
+                $probs[$destino] = array_sum($termos) / count($termos);
+            }
+            
+            // Calcula fator de normalização
+            $somaDasProbabilidades = array_sum($probs);
+            $fatorNormalizacao = 1 / $somaDasProbabilidades;
+
+            // Aplica o fator nas probabilidades
+            array_walk($probs, array('self', 'aplicaFatorNormalizacao'), $fatorNormalizacao);
+
+            arsort($probs);
+
+            //dd($probs);
+
+            $quantidadeMaiorProbabilidade = key($probs);
+
+            $maiorProbabilidade = array_shift($probs);
+
+            return [$quantidadeMaiorProbabilidade => $maiorProbabilidade];
+        }
+
 	public static function inferenciaNova($redeMarkov, $historico, $totalFuncaoTransicao) {
 		// Gera as situações
 		$situacoes = [];
@@ -72,7 +117,7 @@ class Bayes
 				$qtdTotalVezesTransicao = ($qtdTotalVezesTransicao > 0) ? $qtdTotalVezesTransicao : 1;
 
 				#$parcelaProbabilidade = (($qtdVezesTransicao / $qtdTotalVezesTransicao) * log($dt));
-				$parcelaProbabilidade = (($qtdVezesTransicao / $qtdTotalVezesTransicao) * log($dt+1)/log(2));
+				$parcelaProbabilidade = (($qtdVezesTransicao / $qtdTotalVezesTransicao) );
 
 				$formula *= (1 - $parcelaProbabilidade);
 			}
@@ -89,7 +134,7 @@ class Bayes
 
 		arsort($probabilidades);
 
-		dd($probabilidades);
+		//dd($probabilidades);
 
 		$quantidadeMaiorProbabilidade = key($probabilidades);
 
