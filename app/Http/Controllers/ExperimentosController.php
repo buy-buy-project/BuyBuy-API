@@ -103,10 +103,10 @@ class ExperimentosController extends Controller
               ->addRow(['1.9', $totalAcertoRuido[18]])
               ->addRow(['2', $totalAcertoRuido[19]]);
 
-        $lava->BarChart('Acertos', $votes);
+        $lava->ColumnChart('Acertos', $votes, ['vAxis' => ['minValue' => 0]]);
 
         echo '<div id="grafico"></div>';
-        echo $lava->render('BarChart', 'Acertos', 'grafico');
+        echo $lava->render('ColumnChart', 'Acertos', 'grafico');
     }
 }
 

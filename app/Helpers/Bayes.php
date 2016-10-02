@@ -68,7 +68,6 @@ class Bayes
             foreach($estados as $destino){
                 $termos = [];
                 foreach(range(1,90) as $dt){
-                    //normalizando
                     $termos[$dt] = self::probUmaTransicao($redeMarkov, $historico[91-$dt], $destino, $dt);
                 }
                 $probs[$destino] = array_sum($termos) / count($termos);
