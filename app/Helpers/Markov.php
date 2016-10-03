@@ -8,7 +8,8 @@ use App\Helpers\Bayes;
 
 class Markov
 {
-	const QTD_DIAS = 90;
+	const QTD_DIAS_INF = 90;
+    const QTD_DIAS_HISTORICO = 364;
 
 	public static function aprendizagem($idConsumidor = null, $idProduto = null, $experimento = null) {
 		$compras = null;
@@ -26,7 +27,7 @@ class Markov
         // Gera o historico
         foreach ($compras as $compra) {
             $dataCompra = new DateTime($compra->data_lista);
-            $t = self::QTD_DIAS + 1 - ($dataHoje->diff($dataCompra)->days);
+            $t = self::QTD_DIAS_HISTORICO + 1 - ($dataHoje->diff($dataCompra)->days);
             $historico[$t] = $compra->quantidade;
         }
 
@@ -46,8 +47,8 @@ class Markov
                 $estadoAtual = $quantidade;
 
                 // Busca no histórico todas as quantidades que ocorreram após a quantidade atual, em todos os deltaT possíveis
-                for($deltaT = 1; $deltaT <= self::QTD_DIAS; $deltaT++) {
-                    for($i = $t+1; $i <= self::QTD_DIAS; $i = $i + $deltaT) {
+                for($deltaT = 1; $deltaT <= self::QTD_DIAS_INF; $deltaT++) {
+                    for($i = $t+1; $i <= self::QTD_DIAS_HISTORICO; $i = $i + $deltaT) {
                         $proximoEstado = $historico[$i];
 
                         // Verifica se já foi inserido como uma transição, caso não tenha sido, então é inserido.
@@ -70,9 +71,9 @@ class Markov
                 $total = 0;
 
                 // Busca no histórico quantas vezes aconteceu uma determinada transição em todos os deltaT possíveis
-                for($deltaT = 1; $deltaT <= self::QTD_DIAS; $deltaT++) {
+                for($deltaT = 1; $deltaT <= self::QTD_DIAS_INF; $deltaT++) {
                     $totalNoDeltaT = 0;
-                    for($i = 1; $i <= self::QTD_DIAS; $i++) {
+                    for($i = 1; $i <= self::QTD_DIAS_HISTORICO; $i++) {
                         $estadoAtualHist = $historico[$i];
                         $proximoEstadoHist = isset($historico[$i+$deltaT]) ? $historico[$i+$deltaT] : -1;
 
@@ -101,7 +102,7 @@ class Markov
 
 	public static function inicializaArray() {
 		$array = [];
-        for($i = 1; $i <= self::QTD_DIAS; $i++) {
+        for($i = 1; $i <= self::QTD_DIAS_HISTORICO; $i++) {
             $array[$i] = -1;
         }
         return $array;
