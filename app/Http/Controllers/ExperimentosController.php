@@ -48,9 +48,9 @@ class ExperimentosController extends Controller
         $i = 0;
     
         foreach ($ruidos as $ruido) {
-            for($k = 1; $k <= 100; $k++) {
-                //$servidor = 'http://104.236.111.86:4000/experimento2/'.$k.'/'.$ruido;
-                $servidor = 'http://localhost:4000/experimento2/1/'.$ruido;
+            for($k = 1; $k <= 15; $k++) {
+                $servidor = 'http://localhost:8081/experimento2/'.$k.'/'.$ruido;
+                //$servidor = 'http://localhost:8081/experimento2/1/'.$ruido;
                 //echo 'k ' . $k . '-> ruido ' . $ruido . "<br>";
                 $context = stream_context_create(array(
                     'http' => array(

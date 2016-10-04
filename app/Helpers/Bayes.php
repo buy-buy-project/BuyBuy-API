@@ -48,17 +48,29 @@ class Bayes
 	}
 
 
-    public static function probUmaTransicao($redeMarkov, $from, $to, $dt){
+    public static function probUmaTransicaoAntigo($redeMarkov, $from, $to, $dt){
         //Somando Prob chegar em $to
         $soma = 0;
         foreach($redeMarkov as $f => $t){
             $soma += isset($t[$to][$dt]) ? $t[$to][$dt] : 0;
         }
+
+        return ($soma==0 || !isset($redeMarkov[$from][$to][$dt])) ? 0 : $redeMarkov[$from][$to][$dt]/$soma;
+    }
+
+    public static function probUmaTransicao($redeMarkov, $from, $to, $dt){
+        //Somando Prob chegar em $to
+        $soma = 0;
+        foreach($redeMarkov[$from] as $t => $v){
+            $soma += isset($v[$dt]) ? $v[$dt] : 0;
+        }
+
         return ($soma==0 || !isset($redeMarkov[$from][$to][$dt])) ? 0 : $redeMarkov[$from][$to][$dt]/$soma;
     }
 
 	public static function inferenciaGuilherme($redeMarkov, $historico, $totalFuncaoTransicao) {
         #dd(self::probUmaTransicao($redeMarkov, 5, 5, 2));
+
         $estados = array_keys($redeMarkov);
         $probs = [];
 
@@ -72,7 +84,7 @@ class Bayes
             }
             $probs[$destino] = array_sum($termos) / count($termos);
         }
-        
+
         // Calcula fator de normalização
         $somaDasProbabilidades = array_sum($probs);
         $fatorNormalizacao = 1 / $somaDasProbabilidades;
@@ -81,8 +93,6 @@ class Bayes
         array_walk($probs, array('self', 'aplicaFatorNormalizacao'), $fatorNormalizacao);
 
         arsort($probs);
-
-        //dd($probs);
 
         $quantidadeMaiorProbabilidade = key($probs);
 
