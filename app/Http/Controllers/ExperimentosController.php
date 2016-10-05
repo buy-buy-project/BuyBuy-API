@@ -36,21 +36,18 @@ class ExperimentosController extends Controller
 
     public function experimento2() {
         set_time_limit(0);
-        $ruidos = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
-        //$ruidos = [1];
+        //$ruidos = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
+        $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4, 3.7, 4.0, 4.3, 4.6, 4.9, 5.2, 5.5, 5.8];
 
-        $totalAcertoRuido = [
-            0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 0,
-            5 => 0, 6 => 0, 7 => 0, 8 => 0, 9 => 0,
-            10 => 0, 11 => 0, 12 => 0, 13 => 0, 14 => 0,
-            15 => 0, 16 => 0, 17 => 0, 18 => 0, 19 => 0
-        ];
-        $i = 0;
-    
+        $totalAcertoRuido = [];
+        foreach ($ruidos as $r) {
+            $totalAcertoRuido[strval($r)] = 0;
+        }
+
         foreach ($ruidos as $ruido) {
-            for($k = 1; $k <= 15; $k++) {
-                $servidor = 'http://localhost:8081/experimento2/'.$k.'/'.$ruido;
-                //$servidor = 'http://localhost:8081/experimento2/1/'.$ruido;
+            for($k = 1; $k <= 100; $k++) {
+                //$servidor = 'http://localhost:8081/experimento2/'.$k.'/'.$ruido;
+                $servidor = 'http://localhost:8081/experimento2/1/'.$ruido;
                 //echo 'k ' . $k . '-> ruido ' . $ruido . "<br>";
                 $context = stream_context_create(array(
                     'http' => array(
@@ -68,40 +65,21 @@ class ExperimentosController extends Controller
                 $probabilidade = Bayes::inferenciaGuilherme($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                 $quantidadeCalculada = key($probabilidade);
                 if($quantidadeCalculada == 15) {
-                    $totalAcertoRuido[$i]++;
+                    $totalAcertoRuido[strval($ruido)]++;
                 }
             }
-            $i++;
         }
-
-        //dd($totalAcertoRuido);
 
         $lava = new Lavacharts;
 
         $votes  = $lava->DataTable();
 
         $votes->addStringColumn('Ruido')
-              ->addNumberColumn('Acertos')
-              ->addRow(['0.1', $totalAcertoRuido[0]])
-              ->addRow(['0.2', $totalAcertoRuido[1]])
-              ->addRow(['0.3', $totalAcertoRuido[2]])
-              ->addRow(['0.4', $totalAcertoRuido[3]])
-              ->addRow(['0.5', $totalAcertoRuido[4]])
-              ->addRow(['0.6', $totalAcertoRuido[5]])
-              ->addRow(['0.7', $totalAcertoRuido[6]])
-              ->addRow(['0.8', $totalAcertoRuido[7]])
-              ->addRow(['0.9', $totalAcertoRuido[8]])
-              ->addRow(['1', $totalAcertoRuido[9]])
-              ->addRow(['1.1', $totalAcertoRuido[10]])
-              ->addRow(['1.2', $totalAcertoRuido[11]])
-              ->addRow(['1.3', $totalAcertoRuido[12]])
-              ->addRow(['1.4', $totalAcertoRuido[13]])
-              ->addRow(['1.5', $totalAcertoRuido[14]])
-              ->addRow(['1.6', $totalAcertoRuido[15]])
-              ->addRow(['1.7', $totalAcertoRuido[16]])
-              ->addRow(['1.8', $totalAcertoRuido[17]])
-              ->addRow(['1.9', $totalAcertoRuido[18]])
-              ->addRow(['2', $totalAcertoRuido[19]]);
+              ->addNumberColumn('Acertos');
+
+        foreach ($ruidos as $r) {
+            $votes->addRow([strval($r), $totalAcertoRuido[strval($r)]]);
+        }
 
         $lava->ColumnChart('Acertos', $votes, ['vAxis' => ['minValue' => 0]]);
 
