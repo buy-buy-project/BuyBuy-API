@@ -25,6 +25,8 @@ class Bayes
 
 				$qtdTotalVezesTransicao = isset($totalFuncaoTransicao[$quantidade][$estado]) ? $totalFuncaoTransicao[$quantidade][$estado] : 1;
 
+				$qtdTotalVezesTransicao = ($qtdTotalVezesTransicao <= 0) ? 1 : $qtdTotalVezesTransicao;
+
 				$formula *= (1 - ($qtdVezesTransicao / $qtdTotalVezesTransicao) );
 			}
 
@@ -91,6 +93,16 @@ class Bayes
 
         // Aplica o fator nas probabilidades
         array_walk($probs, array('self', 'aplicaFatorNormalizacao'), $fatorNormalizacao);
+
+        /*if(isset($probs[49])) {
+        	$probs[50] += $probs[49];
+        	unset($probs[49]);
+        }
+
+        if(isset($probs[51])) {
+        	$probs[50] += $probs[51];
+        	unset($probs[51]);
+        }*/
 
         arsort($probs);
 
