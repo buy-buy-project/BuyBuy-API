@@ -30,6 +30,8 @@ Route::get('historico/{idConsumidor}', 'HistoricoController@index');
 Route::group(['prefix' => 'experimentos'], function () {
 	Route::get('experimento1', 'ExperimentosController@experimento1');
 	Route::get('experimento2', 'ExperimentosController@experimento2');
+	Route::get('experimento3', 'ExperimentosController@experimento3');
+	Route::get('experimento4', 'ExperimentosController@experimento4');
 });
 
 Route::get('recomendacao/{idConsumidor}', 'RecomendacaoController@index');

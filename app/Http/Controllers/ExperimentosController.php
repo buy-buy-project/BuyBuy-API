@@ -50,9 +50,7 @@ class ExperimentosController extends Controller
         foreach ($ruidos as $ruido) {
             Log::info('ruido ' . $ruido);
             for($k = 1; $k <= 100; $k++) {
-                //$servidor = 'http://localhost:8081/experimento2/'.$k.'/'.$ruido;
                 $servidor = 'http://localhost:8081/experimento2/1/'.$ruido;
-                //echo 'k ' . $k . '-> ruido ' . $ruido . "<br>";
                 $context = stream_context_create(array(
                     'http' => array(
                         'method' => 'GET',
@@ -69,14 +67,14 @@ class ExperimentosController extends Controller
                 $probabilidade = Bayes::inferenciaGuilherme($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                 $quantidadeCalculada = key($probabilidade);
                 Log::info('quantidadeCalculada ' . $quantidadeCalculada);
-                if($quantidadeCalculada == 50 || $quantidadeCalculada == 51 || $quantidadeCalculada == 49) {
+                if($quantidadeCalculada == 50) {
                     $totalAcertoRuido[strval($ruido)]++;
                 }
             }
             Log::info('Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)]);
         }
 
-        echo '<pre>'; print_r($totalAcertoRuido); echo '</pre>';
+        //echo '<pre>'; print_r($totalAcertoRuido); echo '</pre>';
 
         $lava = new Lavacharts;
 
@@ -93,6 +91,124 @@ class ExperimentosController extends Controller
 
         echo '<div id="grafico"></div>';
         echo $lava->render('ColumnChart', 'Acertos', 'grafico');
+    }
+
+    public function experimento3() {
+        set_time_limit(0);
+        $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
+
+        $totalAcertoRuido = [];
+        foreach ($ruidos as $r) {
+            $totalAcertoRuido[strval($r)] = 0;
+        }
+
+        foreach ($ruidos as $ruido) {
+            //Log::info('ruido ' . $ruido);
+            for($k = 1; $k <= 100; $k++) {
+                $servidor = 'http://localhost:8081/experimento3/1/'.$ruido;
+                $context = stream_context_create(array(
+                    'http' => array(
+                        'method' => 'GET',
+                        'header' => "Connection: close\r\n".
+                                    "Content-type: application/json\r\n",
+                    )
+                ));
+                // Realize comunicação com o servidor
+                $compras = file_get_contents($servidor, null, $context);
+
+                $markov = Markov::aprendizagem(null, null, $compras);
+                $probabilidade = Bayes::inferenciaGuilherme($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+                $quantidadeCalculada = key($probabilidade);
+
+                //Log::info('quantidadeCalculada ' . $quantidadeCalculada);
+
+                if($quantidadeCalculada == 50) {
+                    $totalAcertoRuido[strval($ruido)]++;
+                }
+            }
+            //Log::info('Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)]);
+        }
+
+        //echo '<pre>'; print_r($totalAcertoRuido); echo '</pre>';
+
+        $lava = new Lavacharts;
+
+        $votes  = $lava->DataTable();
+
+        $votes->addStringColumn('Ruido')
+              ->addNumberColumn('Acertos');
+
+        foreach ($ruidos as $r) {
+            $votes->addRow([strval($r), $totalAcertoRuido[strval($r)]]);
+        }
+
+        $lava->ColumnChart('Acertos', $votes, ['vAxis' => ['minValue' => 0]]);
+
+        echo '<div id="grafico"></div>';
+        echo $lava->render('ColumnChart', 'Acertos', 'grafico');
+    }
+
+    public function experimento4() {
+        set_time_limit(0);
+        $ruidosTempo = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
+        $ruidosTempo = [0.1, 0.4];
+        $ruidosQuantidade = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
+
+        $i = 1;
+        foreach ($ruidosTempo as $ruidoT) {
+
+            $totalAcertoRuido = [];
+            foreach ($ruidosQuantidade as $r) {
+                $totalAcertoRuido[strval($r)] = 0;
+            }
+
+            foreach ($ruidosQuantidade as $ruidoQ) {
+            
+                for($k = 1; $k <= 1; $k++) {
+                    $servidor = 'http://localhost:8081/experimento4/1/'.$ruidoQ.'/'.$ruidoT;
+                    $context = stream_context_create(array(
+                        'http' => array(
+                            'method' => 'GET',
+                            'header' => "Connection: close\r\n".
+                                        "Content-type: application/json\r\n",
+                        )
+                    ));
+                    // Realize comunicação com o servidor
+                    $compras = file_get_contents($servidor, null, $context);
+
+                    $markov = Markov::aprendizagem(null, null, $compras);
+                    $probabilidade = Bayes::inferenciaGuilherme($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+                    $quantidadeCalculada = key($probabilidade);
+
+
+                    if($quantidadeCalculada == 50) {
+                        $totalAcertoRuido[strval($ruidoQ)]++;
+                    }
+                }
+
+            }
+
+            $lava = new Lavacharts;
+
+            $votes  = $lava->DataTable();
+
+            $votes->addStringColumn('Ruido')
+                  ->addNumberColumn('Acertos');
+
+            foreach ($ruidosQuantidade as $r) {
+                $votes->addRow([strval($r), $totalAcertoRuido[strval($r)]]);
+            }
+
+            $lava->ColumnChart('Acertos', $votes, ['vAxis' => ['minValue' => 0], 'title' => 'Ruido tempo: '.$ruidoT]);
+
+            echo '<div id="grafico_'.$i.'"></div>';
+            echo $lava->render('ColumnChart', 'Acertos', 'grafico_'.$i);
+            echo '<div style="clear: both;"></div>';
+            
+            $i++;
+
+        }
+
     }
 }
 
