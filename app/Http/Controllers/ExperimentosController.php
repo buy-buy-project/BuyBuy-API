@@ -41,6 +41,7 @@ class ExperimentosController extends Controller
         //$ruidos = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
         //$ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4, 3.7, 4.0, 4.3, 4.6, 4.9, 5.2, 5.5, 5.8];
         $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
+        #$ruidos = [1.1];
 
         $totalAcertoRuido = [];
         foreach ($ruidos as $r) {
@@ -50,7 +51,7 @@ class ExperimentosController extends Controller
         foreach ($ruidos as $ruido) {
             Log::info('ruido ' . $ruido);
             for($k = 1; $k <= 100; $k++) {
-                $servidor = 'http://localhost:8081/experimento2/1/'.$ruido;
+                $servidor = 'http://localhost:8081/experimento2/1/'.$ruido.'/10';
                 $context = stream_context_create(array(
                     'http' => array(
                         'method' => 'GET',
@@ -72,6 +73,7 @@ class ExperimentosController extends Controller
                 }
             }
             Log::info('Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)]);
+            echo 'ruido '.$ruido.' Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)] .'<br>';
         }
 
         //echo '<pre>'; print_r($totalAcertoRuido); echo '</pre>';

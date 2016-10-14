@@ -81,10 +81,14 @@ class Bayes
 
         foreach($estados as $destino){
             $termos = [];
-            foreach(range(1,90) as $dt){
+            $probs[$destino]=0;
+            $prod=1;
+            foreach(range(1,11) as $dt){
                 $termos[$dt] = self::probUmaTransicao($redeMarkov, $historico[365-$dt], $destino, $dt);
+                $prod *= $termos[$dt];
             }
             $probs[$destino] = array_sum($termos) / count($termos);
+            $probs[$destino] = $prod + 0.000000001;
         }
 
         // Calcula fator de normalização
