@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Helpers;
-include 'Math.php';
+//include 'Math.php';
 
 class Bayes
 {
@@ -71,7 +71,7 @@ class Bayes
         return ($soma==0 || !isset($redeMarkov[$from][$to][$dt])) ? 0 : $redeMarkov[$from][$to][$dt]/$soma;
     }
 
-	public static function inferenciaGuilherme_old($redeMarkov, $historico, $totalFuncaoTransicao) {
+	public static function inferenciaCorreta_old($redeMarkov, $historico, $totalFuncaoTransicao) {
         #dd(self::probUmaTransicao($redeMarkov, 5, 5, 2));
 
         $estados = array_keys($redeMarkov);
@@ -122,7 +122,7 @@ class Bayes
 
 
 
-	public static function inferenciaGuilherme($redeMarkov, $historico, $totalFuncaoTransicao) {
+	public static function inferenciaCorreta($redeMarkov, $historico, $totalFuncaoTransicao) {
         #dd(self::probUmaTransicao($redeMarkov, 5, 5, 2));
 
         $estados = array_keys($redeMarkov);
@@ -157,13 +157,23 @@ class Bayes
         array_walk($probs, array('self', 'aplicaFatorNormalizacao'), $fatorNormalizacao);
 
         /*if(isset($probs[49])) {
-        	$probs[50] += $probs[49];
-        	unset($probs[49]);
+        	if(isset($probs[50])) {
+        		$probs[50] += $probs[49];
+        		unset($probs[49]);
+        	} else {
+        		$probs[50] = $probs[49];
+        		unset($probs[49]);
+        	}
         }
 
         if(isset($probs[51])) {
-        	$probs[50] += $probs[51];
-        	unset($probs[51]);
+        	if(isset($probs[50])) {
+        		$probs[50] += $probs[51];
+        		unset($probs[51]);
+        	} else {
+        		$probs[50] = $probs[51];
+        		unset($probs[51]);
+        	}
         }*/
 
         arsort($probs);
