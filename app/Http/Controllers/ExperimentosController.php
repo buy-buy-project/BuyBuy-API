@@ -41,16 +41,19 @@ class ExperimentosController extends Controller
         //$ruidos = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
         //$ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4, 3.7, 4.0, 4.3, 4.6, 4.9, 5.2, 5.5, 5.8];
         $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
-        #$ruidos = [1.1];
+        #$ruidos = [0.1, 0.4, 0.7, 1.0];
+        #$ruidos = [1.8];
 
         $totalAcertoRuido = [];
         foreach ($ruidos as $r) {
             $totalAcertoRuido[strval($r)] = 0;
         }
 
+        #echo '{"resultados": {';
         foreach ($ruidos as $ruido) {
             Log::info('ruido ' . $ruido);
-            for($k = 1; $k <= 100; $k++) {
+            echo 'ruido ' . $ruido . '<br>';
+            for($k = 1; $k <= 20; $k++) {
                 $servidor = 'http://localhost:8081/experimento2/1/'.$ruido.'/10';
                 $context = stream_context_create(array(
                     'http' => array(
@@ -73,9 +76,11 @@ class ExperimentosController extends Controller
                 }
             }
             Log::info('Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)]);
-            echo 'ruido '.$ruido.' Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)] .'<br>';
+            #echo 'ruido '.$ruido.' Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)] .'<br>';
         }
-
+        $json_string = json_encode(array_values($markov['historico']), JSON_PRETTY_PRINT);
+        #echo '"historico": '.$json_string.'}}';
+        //die;
         //echo '<pre>'; print_r($totalAcertoRuido); echo '</pre>';
 
         $lava = new Lavacharts;
@@ -97,7 +102,8 @@ class ExperimentosController extends Controller
 
     public function experimento3() {
         set_time_limit(0);
-        $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
+        #$ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
+        $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9];
 
         $totalAcertoRuido = [];
         foreach ($ruidos as $r) {
@@ -107,7 +113,7 @@ class ExperimentosController extends Controller
         foreach ($ruidos as $ruido) {
             //Log::info('ruido ' . $ruido);
             for($k = 1; $k <= 100; $k++) {
-                $servidor = 'http://localhost:8081/experimento3/1/'.$ruido;
+                $servidor = 'http://localhost:8081/experimento3/1/'.$ruido.'/10';
                 $context = stream_context_create(array(
                     'http' => array(
                         'method' => 'GET',
@@ -127,6 +133,7 @@ class ExperimentosController extends Controller
                 if($quantidadeCalculada == 50) {
                     $totalAcertoRuido[strval($ruido)]++;
                 }
+                echo 'ruido '.$ruido.' Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)] .'<br>';
             }
             //Log::info('Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)]);
         }
