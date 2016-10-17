@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Compra extends Model
 {
     protected $table = 'compra';
-    protected $fillable = ['quantidade', 'produto_id', 'lista_id'];
+    protected $fillable = ['quantidade', 'produto_id', 'lista_compra_id'];
     public $timestamps = false;
 
     public function listaCompra() {

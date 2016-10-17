@@ -35,4 +35,5 @@ Route::group(['prefix' => 'experimentos'], function () {
 });
 
 Route::get('recomendacao/{idConsumidor}', 'RecomendacaoController@index');
-
+Route::post('listaConfirmada', 'RecomendacaoController@listaDeComprasConfirmada');
+Route::get('listaConfirmadaTeste', 'RecomendacaoController@teste');
