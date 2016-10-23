@@ -97,19 +97,24 @@ class ExperimentosController extends Controller
 
     public function experimento2() {
         set_time_limit(0);
-        $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
-        $ruidos = [0.1, 0.4];
+        //$ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
+        //$ruidos = [0.1, 0.4, 0.7, 1.0, 1.3];
+        //$ruidos = [1.3];
+        //$ruidos = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
+        $ruidos = [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1];
 
         $lava = new Lavacharts;
 
         $grafico = $lava->DataTable();
-        $grafico->addStringColumn('Ruido')
-                ->addNumberColumn('Acertos');
+        $grafico->addStringColumn('Ruído')
+                ->addNumberColumn('% Acerto');
 
-        $i = 1;
         foreach ($ruidos as $ruido) {
             Log::info('ruido ' . $ruido);
 
+            $maiorDif = 0;
+            $maiorDifTeste = 50;
+            $erro = 0;
             for($k = 1; $k <= 100; $k++) {
                 $servidor = 'http://localhost:8081/experimento2/1/'.$ruido.'/10';
                 $context = stream_context_create(array(
@@ -126,17 +131,50 @@ class ExperimentosController extends Controller
                 $probabilidade = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                 $quantidadeCalculada = key($probabilidade);
 
-                $porcentagemErro = (abs($quantidadeCalculada-50) / 50);
-                $grafico->addRow([$quantidadeCalculada, $porcentagemErro]);
+                $erro += abs($quantidadeCalculada-50);
+
+                /*echo 'Quantidade calculada ' . $quantidadeCalculada . "<br>";
+                echo 'abs($quantidadeCalculada-50) ' . abs($quantidadeCalculada-50) 
+                . ' abs($maiorDif-50) ' . $maiorDif
+                . "<br><hr>";*/
+
+                // grafico ruido
+                //$grafico->addRow([$k, abs($quantidadeCalculada-50)]);
+
+                if(abs($quantidadeCalculada-50) > $maiorDif) {
+                    $maiorDifTeste = $quantidadeCalculada;
+                    $maiorDif = abs($quantidadeCalculada-50);
+                }
             }
 
+            /*echo "Erro: " . $erro . "<br>";
+            echo "Maior Dif: " . $maiorDifTeste . "<br>";
+            echo "Maior Dif: " . $maiorDif . "<br><hr>";*/
 
-            $lava->LineChart('Acertos', $grafico, ['vAxis' => ['minValue' => 0], 'title' => 'Ruido: '.$ruido]);
-            echo '<div id="grafico_'.$i.'"></div>';
-            echo $lava->render('LineChart', 'Acertos', 'grafico_'.$i);
+            $maiorDif = ($maiorDif == 0) ? 1 : $maiorDif;
+            $notaFinalAcerto = 1 - ($erro / (100 * $maiorDif));
+            $grafico->addRow([$ruido, ($notaFinalAcerto*100)]);
 
-            $i++;
+            
+            // grafico ruido
+            /*$lava->LineChart('Acertos', $grafico, ['vAxis' => ['minValue' => 0]]);
+            echo '<div id="grafico"></div>';
+            echo $lava->render('LineChart', 'Acertos', 'grafico');
+            die();*/
+            
         }
+
+        $lava->LineChart('Acertos', $grafico, [
+                'vAxis' => ['minValue' => 0],
+                'title' => 'Permutação de Quantidade de Compra',
+                'hAxis' => ['title' => 'Ruído'],
+                'vAxis' => ['title' => 'Porcentagem de Acerto'],
+                'height' => 500
+            ]
+        );
+        echo '<div id="grafico"></div>';
+        echo $lava->render('LineChart', 'Acertos', 'grafico');
+
     }
 
     public function experimento3() {
@@ -191,6 +229,7 @@ class ExperimentosController extends Controller
         }
 
         $lava->ColumnChart('Acertos', $votes, ['vAxis' => ['minValue' => 0]]);
+
 
         echo '<div id="grafico"></div>';
         echo $lava->render('ColumnChart', 'Acertos', 'grafico');
