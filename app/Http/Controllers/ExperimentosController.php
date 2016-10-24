@@ -97,11 +97,14 @@ class ExperimentosController extends Controller
 
     public function experimento2() {
         set_time_limit(0);
-        //$ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
-        //$ruidos = [0.1, 0.4, 0.7, 1.0, 1.3];
-        //$ruidos = [1.3];
+        $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
         //$ruidos = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
-        $ruidos = [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1];
+        //$ruidos = [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1];
+
+        $totalErroRuido = [];
+        foreach ($ruidos as $r) {
+            $totalErroRuido[strval($r)] = 0;
+        }
 
         $lava = new Lavacharts;
 
@@ -109,14 +112,14 @@ class ExperimentosController extends Controller
         $grafico->addStringColumn('Ruído')
                 ->addNumberColumn('% Acerto');
 
+        $maiorDif = 0;
+        $maiorDifTeste = 50;
         foreach ($ruidos as $ruido) {
             Log::info('ruido ' . $ruido);
-
-            $maiorDif = 0;
-            $maiorDifTeste = 50;
+            
             $erro = 0;
             for($k = 1; $k <= 100; $k++) {
-                $servidor = 'http://localhost:8081/experimento2/1/'.$ruido.'/10';
+                $servidor = 'http://localhost:8081/experimento2/1/'.$ruido.'/5';
                 $context = stream_context_create(array(
                     'http' => array(
                         'method' => 'GET',
@@ -133,11 +136,6 @@ class ExperimentosController extends Controller
 
                 $erro += abs($quantidadeCalculada-50);
 
-                /*echo 'Quantidade calculada ' . $quantidadeCalculada . "<br>";
-                echo 'abs($quantidadeCalculada-50) ' . abs($quantidadeCalculada-50) 
-                . ' abs($maiorDif-50) ' . $maiorDif
-                . "<br><hr>";*/
-
                 // grafico ruido
                 //$grafico->addRow([$k, abs($quantidadeCalculada-50)]);
 
@@ -147,21 +145,21 @@ class ExperimentosController extends Controller
                 }
             }
 
-            /*echo "Erro: " . $erro . "<br>";
-            echo "Maior Dif: " . $maiorDifTeste . "<br>";
-            echo "Maior Dif: " . $maiorDif . "<br><hr>";*/
-
-            $maiorDif = ($maiorDif == 0) ? 1 : $maiorDif;
-            $notaFinalAcerto = 1 - ($erro / (100 * $maiorDif));
-            $grafico->addRow([$ruido, ($notaFinalAcerto*100)]);
-
+            $totalErroRuido[strval($ruido)] = $erro;
             
             // grafico ruido
             /*$lava->LineChart('Acertos', $grafico, ['vAxis' => ['minValue' => 0]]);
             echo '<div id="grafico"></div>';
             echo $lava->render('LineChart', 'Acertos', 'grafico');
-            die();*/
-            
+            die();*/          
+        }
+
+        $maiorDif = ($maiorDif == 0) ? 1 : $maiorDif;
+
+        foreach ($ruidos as $r) {
+            $erro = $totalErroRuido[strval($r)];
+            $notaFinalAcerto = 1 - ($erro / (100 * $maiorDif));
+            $grafico->addRow([$r, ($notaFinalAcerto*100)]);
         }
 
         $lava->LineChart('Acertos', $grafico, [
@@ -179,16 +177,23 @@ class ExperimentosController extends Controller
 
     public function experimento3() {
         set_time_limit(0);
-        #$ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
-        $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9];
+        $ruidos = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
 
-        $totalAcertoRuido = [];
+        $totalErroRuido = [];
         foreach ($ruidos as $r) {
-            $totalAcertoRuido[strval($r)] = 0;
+            $totalErroRuido[strval($r)] = 0;
         }
 
+        $lava = new Lavacharts;
+
+        $grafico = $lava->DataTable();
+        $grafico->addStringColumn('Ruído')
+                ->addNumberColumn('% Acerto');
+
+        $maiorDif = 0;
         foreach ($ruidos as $ruido) {
             //Log::info('ruido ' . $ruido);
+            $erro = 0;
             for($k = 1; $k <= 100; $k++) {
                 $servidor = 'http://localhost:8081/experimento3/1/'.$ruido.'/10';
                 $context = stream_context_create(array(
@@ -205,54 +210,65 @@ class ExperimentosController extends Controller
                 $probabilidade = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                 $quantidadeCalculada = key($probabilidade);
 
-                //Log::info('quantidadeCalculada ' . $quantidadeCalculada);
+                $erro += abs($quantidadeCalculada-50);
 
-                if($quantidadeCalculada == 50) {
-                    $totalAcertoRuido[strval($ruido)]++;
+                // grafico ruido
+                //$grafico->addRow([$k, abs($quantidadeCalculada-50)]);
+
+                if(abs($quantidadeCalculada-50) > $maiorDif) {
+                    $maiorDif = abs($quantidadeCalculada-50);
                 }
-                echo 'ruido '.$ruido.' Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)] .'<br>';
             }
-            //Log::info('Total de acerto do ruido ' . $totalAcertoRuido[strval($ruido)]);
+
+            $totalErroRuido[strval($ruido)] = $erro;
+            
+            // grafico ruido
+            /*$lava->LineChart('Acertos', $grafico, ['vAxis' => ['minValue' => 0]]);
+            echo '<div id="grafico"></div>';
+            echo $lava->render('LineChart', 'Acertos', 'grafico');
+            die();*/
         }
 
-        //echo '<pre>'; print_r($totalAcertoRuido); echo '</pre>';
-
-        $lava = new Lavacharts;
-
-        $votes  = $lava->DataTable();
-
-        $votes->addStringColumn('Ruido')
-              ->addNumberColumn('Acertos');
+        $maiorDif = ($maiorDif == 0) ? 1 : $maiorDif;
 
         foreach ($ruidos as $r) {
-            $votes->addRow([strval($r), $totalAcertoRuido[strval($r)]]);
+            $erro = $totalErroRuido[strval($r)];
+            $notaFinalAcerto = 1 - ($erro / (100 * $maiorDif));
+            $grafico->addRow([$r, ($notaFinalAcerto*100)]);
         }
 
-        $lava->ColumnChart('Acertos', $votes, ['vAxis' => ['minValue' => 0]]);
-
-
+        $lava->LineChart('Acertos', $grafico, [
+                'vAxis' => ['minValue' => 0],
+                'title' => 'Permutação de Intervalos de Compra',
+                'hAxis' => ['title' => 'Ruído'],
+                'vAxis' => ['title' => 'Porcentagem de Acerto'],
+                'height' => 500
+            ]
+        );
         echo '<div id="grafico"></div>';
-        echo $lava->render('ColumnChart', 'Acertos', 'grafico');
+        echo $lava->render('LineChart', 'Acertos', 'grafico');
     }
 
     public function experimento4() {
         set_time_limit(0);
         $ruidosTempo = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
-        $ruidosTempo = [0.1, 0.4];
+        $ruidosTempo = [0.1, 0.4, 0.7, 1.0, 1.3];
         $ruidosQuantidade = [0.1, 0.4, 0.7, 1.0, 1.3, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.4];
 
         $i = 1;
         foreach ($ruidosTempo as $ruidoT) {
 
-            $totalAcertoRuido = [];
+            $totalErroRuido = [];
             foreach ($ruidosQuantidade as $r) {
-                $totalAcertoRuido[strval($r)] = 0;
+                $totalErroRuido[strval($r)] = 0;
             }
 
+            $maiorDif = 0;
             foreach ($ruidosQuantidade as $ruidoQ) {
             
-                for($k = 1; $k <= 1; $k++) {
-                    $servidor = 'http://localhost:8081/experimento4/1/'.$ruidoQ.'/'.$ruidoT;
+                $erro = 0;
+                for($k = 1; $k <= 100; $k++) {
+                    $servidor = 'http://localhost:8081/experimento4/1/'.$ruidoQ.'/'.$ruidoT.'/10';
                     $context = stream_context_create(array(
                         'http' => array(
                             'method' => 'GET',
@@ -267,33 +283,54 @@ class ExperimentosController extends Controller
                     $probabilidade = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                     $quantidadeCalculada = key($probabilidade);
 
+                    $erro += abs($quantidadeCalculada-50);
 
-                    if($quantidadeCalculada == 50) {
-                        $totalAcertoRuido[strval($ruidoQ)]++;
+                    // grafico ruido
+                    //$grafico->addRow([$k, abs($quantidadeCalculada-50)]);
+
+                    if(abs($quantidadeCalculada-50) > $maiorDif) {
+                        $maiorDif = abs($quantidadeCalculada-50);
                     }
                 }
+
+                $totalErroRuido[strval($ruidoQ)] = $erro;
+            
+                // grafico ruido
+                /*$lava->LineChart('Acertos', $grafico, ['vAxis' => ['minValue' => 0]]);
+                echo '<div id="grafico"></div>';
+                echo $lava->render('LineChart', 'Acertos', 'grafico');
+                die();*/
 
             }
 
             $lava = new Lavacharts;
 
-            $votes  = $lava->DataTable();
+            $grafico = $lava->DataTable();
+            $grafico->addStringColumn('Ruído')
+                    ->addNumberColumn('% Acerto');
 
-            $votes->addStringColumn('Ruido')
-                  ->addNumberColumn('Acertos');
+            $maiorDif = ($maiorDif == 0) ? 1 : $maiorDif;
 
             foreach ($ruidosQuantidade as $r) {
-                $votes->addRow([strval($r), $totalAcertoRuido[strval($r)]]);
+                $erro = $totalErroRuido[strval($r)];
+                $notaFinalAcerto = 1 - ($erro / (100 * $maiorDif));
+                $grafico->addRow([$r, ($notaFinalAcerto*100)]);
             }
 
-            $lava->ColumnChart('Acertos', $votes, ['vAxis' => ['minValue' => 0], 'title' => 'Ruido tempo: '.$ruidoT]);
+            $lava->LineChart('Acertos', $grafico, [
+                    'vAxis' => ['minValue' => 0],
+                    'title' => 'Permutação de Quantidade e Intervalos de Compra (ruído de tempo: '.$ruidoT.') ',
+                    'hAxis' => ['title' => 'Ruído'],
+                    'vAxis' => ['title' => 'Porcentagem de Acerto'],
+                    'height' => 500
+                ]
+            );
 
             echo '<div id="grafico_'.$i.'"></div>';
-            echo $lava->render('ColumnChart', 'Acertos', 'grafico_'.$i);
+            echo $lava->render('LineChart', 'Acertos', 'grafico_'.$i);
             echo '<div style="clear: both;"></div>';
             
             $i++;
-
         }
 
     }
