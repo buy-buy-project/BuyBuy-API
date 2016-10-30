@@ -122,7 +122,7 @@ class Bayes
 
 
 
-	public static function inferenciaCorreta($redeMarkov, $historico, $totalFuncaoTransicao) {
+	public static function inferenciaCorreta($redeMarkov, $historico, $totalFuncaoTransicao, $retornaTodasProbs = false) {
         #dd(self::probUmaTransicao($redeMarkov, 5, 5, 2));
 
         $estados = array_keys($redeMarkov);
@@ -148,35 +148,18 @@ class Bayes
         }
 
         // Calcula fator de normalização
-        #$somaDasProbabilidades = array_sum(array_values($probs));
-        #$fatorNormalizacao = 1 / $somaDasProbabilidades;
-        $fatorNormalizacao = 1;
+        $somaDasProbabilidades = array_sum(array_values($probs));
+        $fatorNormalizacao = 1 / $somaDasProbabilidades;
+        //$fatorNormalizacao = 1;
         //dd($probs);
 
         // Aplica o fator nas probabilidades
         array_walk($probs, array('self', 'aplicaFatorNormalizacao'), $fatorNormalizacao);
 
-        /*if(isset($probs[49])) {
-        	if(isset($probs[50])) {
-        		$probs[50] += $probs[49];
-        		unset($probs[49]);
-        	} else {
-        		$probs[50] = $probs[49];
-        		unset($probs[49]);
-        	}
-        }
-
-        if(isset($probs[51])) {
-        	if(isset($probs[50])) {
-        		$probs[50] += $probs[51];
-        		unset($probs[51]);
-        	} else {
-        		$probs[50] = $probs[51];
-        		unset($probs[51]);
-        	}
-        }*/
-
         arsort($probs);
+
+        if($retornaTodasProbs)
+            return $probs;
 
         $quantidadeMaiorProbabilidade = key($probs);
 

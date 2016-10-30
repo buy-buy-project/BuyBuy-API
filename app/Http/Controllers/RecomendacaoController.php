@@ -11,6 +11,9 @@ use App\Models\Consumidor;
 use App\Models\Produto;
 use App\Models\Compra;
 
+use App\Helpers\Markov;
+use App\Helpers\Bayes;
+
 class RecomendacaoController extends Controller
 {
     /**
@@ -107,4 +110,21 @@ class RecomendacaoController extends Controller
 
         echo $teste;
     }
+
+    /**
+     * Retorna as probabilidades de recomendação de um produto
+     *
+     * @param array histórico de compras do produto
+     * @return string json com as probabilidades
+     */
+    public function recomendaUmProduto(Request $request)
+    {
+        $historico = $request->all();
+        $historico = json_encode($historico);
+
+        $markov = Markov::aprendizagem(null, null, $historico);
+        $probabilidades = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao'], true);
+
+        echo json_encode($probabilidades);
+    }  
 }
