@@ -73,45 +73,6 @@ class RecomendacaoController extends Controller
         $lista->update(['confirmada' => 1]);
     }
 
-    public function teste() {
-        $servidor = 'http://localhost/BuyBuy-API/public/listaConfirmada';
-
-        $content = '{
-         "lista_compra": [{
-          "id": 1,
-          "data_lista": "2016-07-21",
-          "recomendada": 2,
-          "confirmada": 1,
-          "consumidor_id": 1,
-          "compras": [{
-           "id": 1,
-           "quantidade": 6,
-           "produto_id": 1,
-           "lista_compra_id": 1
-          }, {
-           "id": 2,
-           "quantidade": 2,
-           "produto_id": 2,
-           "lista_compra_id": 1
-          }]
-         }]
-        }';
-
-        $context = stream_context_create(array(
-            'http' => array(
-                'method' => 'POST',
-                'header' => "Connection: close\r\n".
-                            "Content-type: application/json\r\n".
-                            "Content-Length: ".strlen($content)."\r\n",
-                'content' => $content
-            )
-        ));
-
-        $teste = file_get_contents($servidor, null, $context);
-
-        echo $teste;
-    }
-
     /**
      * Retorna as probabilidades de recomendação de um produto
      *
