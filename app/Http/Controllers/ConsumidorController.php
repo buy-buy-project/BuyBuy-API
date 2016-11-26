@@ -40,7 +40,7 @@ class ConsumidorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Consumidor::create($request->all());
     }
 
     /**
@@ -76,7 +76,9 @@ class ConsumidorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $consumidor = Consumidor::findOrFail($id);
+        
+        $consumidor->update($request->all());
     }
 
     /**
@@ -87,6 +89,8 @@ class ConsumidorController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $consumidor = Consumidor::findOrFail($id);
+        
+        $consumidor->delete();
     }
 }
