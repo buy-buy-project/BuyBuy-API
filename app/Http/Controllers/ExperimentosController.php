@@ -31,7 +31,7 @@ class ExperimentosController extends Controller
         $markov = Markov::aprendizagem(null, null, $compras);
         //Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
         //Bayes::inferenciaNova($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
-        Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+        Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
     }
 
     /*public function experimento2() {
@@ -63,7 +63,7 @@ class ExperimentosController extends Controller
                 $markov = Markov::aprendizagem(null, null, $compras);
                 //$probabilidade = Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                 //$probabilidade = Bayes::inferenciaNova($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
-                $probabilidade = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+                $probabilidade = Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                 $quantidadeCalculada = key($probabilidade);
                 Log::info('quantidadeCalculada ' . $quantidadeCalculada);
                 if($quantidadeCalculada == 50) {
@@ -131,7 +131,7 @@ class ExperimentosController extends Controller
                 $compras = file_get_contents($servidor, null, $context);
 
                 $markov = Markov::aprendizagem(null, null, $compras);
-                $probabilidade = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+                $probabilidade = Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                 $quantidadeCalculada = key($probabilidade);
 
                 $erro += abs($quantidadeCalculada-50);
@@ -207,7 +207,7 @@ class ExperimentosController extends Controller
                 $compras = file_get_contents($servidor, null, $context);
 
                 $markov = Markov::aprendizagem(null, null, $compras);
-                $probabilidade = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+                $probabilidade = Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                 $quantidadeCalculada = key($probabilidade);
 
                 $erro += abs($quantidadeCalculada-50);
@@ -280,7 +280,7 @@ class ExperimentosController extends Controller
                     $compras = file_get_contents($servidor, null, $context);
 
                     $markov = Markov::aprendizagem(null, null, $compras);
-                    $probabilidade = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
+                    $probabilidade = Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao']);
                     $quantidadeCalculada = key($probabilidade);
 
                     $erro += abs($quantidadeCalculada-50);

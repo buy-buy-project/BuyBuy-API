@@ -85,7 +85,7 @@ class RecomendacaoController extends Controller
         $historico = json_encode($historico);
 
         $markov = Markov::aprendizagem(null, null, $historico);
-        $probabilidades = Bayes::inferenciaCorreta($markov['rede'], $markov['historico'], $markov['totalPorTransicao'], true);
+        $probabilidades = Bayes::inferencia($markov['rede'], $markov['historico'], $markov['totalPorTransicao'], true);
 
         $retorno = [];
         $i = 0;
