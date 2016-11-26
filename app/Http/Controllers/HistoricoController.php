@@ -29,6 +29,7 @@ class HistoricoController extends Controller
             foreach ($lista->compras as $compra) {
                 $produto = Produto::findOrFail($compra->produto_id);
                 $compra->produto_nome = $produto->nome;
+                $compra->produto_sku = $produto->sku;
             }
 
         }

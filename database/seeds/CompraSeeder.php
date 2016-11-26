@@ -21,6 +21,18 @@ class CompraSeeder extends Seeder
         $compras[] = ['quantidade' => 0, 'produtoID' => 1, 'listaID' => 7];
         $compras[] = ['quantidade' => 6, 'produtoID' => 1, 'listaID' => 8];
 
+        $compras[] = ['quantidade' => 6, 'produtoID' => 1, 'listaID' => 9];
+        $compras[] = ['quantidade' => 2, 'produtoID' => 2, 'listaID' => 9];
+        $compras[] = ['quantidade' => 3, 'produtoID' => 3, 'listaID' => 9];
+        $compras[] = ['quantidade' => 4, 'produtoID' => 4, 'listaID' => 9];
+        $compras[] = ['quantidade' => 2, 'produtoID' => 5, 'listaID' => 9];
+        $compras[] = ['quantidade' => 1, 'produtoID' => 6, 'listaID' => 9];
+        $compras[] = ['quantidade' => 8, 'produtoID' => 7, 'listaID' => 9];
+        $compras[] = ['quantidade' => 9, 'produtoID' => 8, 'listaID' => 9];
+        $compras[] = ['quantidade' => 5, 'produtoID' => 9, 'listaID' => 9];
+        $compras[] = ['quantidade' => 7, 'produtoID' => 10, 'listaID' => 9];
+
+
         foreach($compras as $compra) {
             App\Models\Compra::create(
             	[
