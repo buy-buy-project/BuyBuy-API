@@ -103,7 +103,7 @@ class Markov
 	public static function inicializaArray() {
 		$array = [];
         for($i = 1; $i <= self::QTD_DIAS_HISTORICO; $i++) {
-            $array[$i] = -1;
+            $array[$i] = 0;
         }
         return $array;
 	}
