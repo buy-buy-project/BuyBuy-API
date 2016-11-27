@@ -6,6 +6,17 @@ class Bayes
 {
 	const QTD_DIAS = 90;
 
+    public static function probUmaTransicao($redeMarkov, $from, $to, $dt){
+        //Somando Prob chegar em $to
+        $soma = 0;
+
+        foreach($redeMarkov[$from] as $t => $v){
+            $soma += isset($v[$dt]) ? $v[$dt] : 0;
+        }
+
+        return ($soma==0 || !isset($redeMarkov[$from][$to][$dt])) ? 0 : $redeMarkov[$from][$to][$dt]/$soma;
+    }
+
 	public static function inferencia($redeMarkov, $historico, $totalFuncaoTransicao, $retornaTodasProbs = false) {
         $estados = array_keys($redeMarkov);
         $probs = [];
@@ -31,6 +42,7 @@ class Bayes
 
         // Calcula fator de normalização
         $somaDasProbabilidades = array_sum(array_values($probs));
+        $somaDasProbabilidades = ($somaDasProbabilidades > 0) ? $somaDasProbabilidades : 1;
         $fatorNormalizacao = 1 / $somaDasProbabilidades;
 
         // Aplica o fator nas probabilidades
