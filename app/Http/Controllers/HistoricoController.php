@@ -19,7 +19,7 @@ class HistoricoController extends Controller
      * @return string JSON com as listas/compras/dados do consumidor
      */
     public function index($idConsumidor) {
-    	$listaCompra = ListaCompra::where(['consumidor_id' => $idConsumidor, 'confirmada' => 1])->get();
+    	$listaCompra = ListaCompra::where(['consumidor_id' => $idConsumidor, 'confirmada' => 1])->orderBy('data_lista', 'desc')->limit(10)->get();
 
         foreach ($listaCompra as $lista) {
             $consumidor = Consumidor::findOrFail($idConsumidor);
