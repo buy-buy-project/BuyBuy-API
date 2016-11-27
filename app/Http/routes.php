@@ -24,7 +24,7 @@ Route::resource('compra', 'CompraController');
 Route::resource('listaCompra', 'ListaCompraController');
 
 Route::get('markov', 'MarkovController@index');
-Route::get('markovInsereHistorico', 'MarkovController@buscaHistoricoParaInserir');
+Route::get('markovInsereHistorico/{idConsumidor}', 'MarkovController@buscaHistoricoParaInserir');
 
 Route::get('historico/{idConsumidor}', 'HistoricoController@index');
 

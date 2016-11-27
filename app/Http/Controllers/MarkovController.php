@@ -86,7 +86,7 @@ class MarkovController extends Controller
      *
      * @return void
      */
-    public function buscaHistoricoParaInserir() {
+    public function buscaHistoricoParaInserir($idConsumidor) {
         set_time_limit(0);
 
         for($i = 1; $i <= 31; $i++) {
@@ -112,14 +112,21 @@ class MarkovController extends Controller
             $compras = json_decode($compras);
 
             foreach($compras as $compra) {
-               $dadosLista = [
-                    'data_lista' => $compra->data_lista,
-                    'consumidor_id' => 1,
-                    'recomendada' => 0,
-                    'confirmada' => 1
-                ];
+                $listaCompra = ListaCompra::where(['data_lista' => $compra->data_lista, 'confirmada' => 1, 'consumidor_id' => $idConsumidor])->first();
 
-                $idLista = ListaCompra::create($dadosLista)->id;
+                $idLista = null;
+                if(!empty($listaCompra))
+                    $idLista = $listaCompra->id;
+                else {
+                    $dadosLista = [
+                        'data_lista' => $compra->data_lista,
+                        'consumidor_id' => $idConsumidor,
+                        'recomendada' => 0,
+                        'confirmada' => 1
+                    ];
+
+                    $idLista = ListaCompra::create($dadosLista)->id;
+                }
 
                 $dadosCompras = [
                     'quantidade' => $compra->quantidade,
