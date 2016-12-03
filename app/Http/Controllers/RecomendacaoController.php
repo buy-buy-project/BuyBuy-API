@@ -79,8 +79,7 @@ class RecomendacaoController extends Controller
      * @param array histórico de compras do produto
      * @return string json com as probabilidades
      */
-    public function recomendaUmProduto(Request $request)
-    {
+    public function recomendaUmProduto(Request $request) {
         $historico = $request->all();
         $historico = json_encode($historico);
 
@@ -93,6 +92,16 @@ class RecomendacaoController extends Controller
             $retorno[$i]['quantidade'] = $quantidade;
             $retorno[$i]['probabilidade'] = $prob;
             $i++;
+        }
+
+        // Insere produto na lista recomendada
+        $listas = ListaCompra::where('consumidor_id', 3)->get();
+        if($listas->count()) {
+            foreach ($listas as $lista)
+                $listaCompraID = $lista->id;
+
+            if(key($probabilidades) > 0)
+                Compra::create(['quantidade' => key($probabilidades), 'produto_id' => 1, 'lista_compra_id' => $listaCompraID]);
         }
 
         echo json_encode($retorno);
