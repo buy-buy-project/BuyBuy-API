@@ -100,8 +100,11 @@ class RecomendacaoController extends Controller
             foreach ($listas as $lista)
                 $listaCompraID = $lista->id;
 
-            if(key($probabilidades) > 0)
-                Compra::create(['quantidade' => key($probabilidades), 'produto_id' => 1, 'lista_compra_id' => $listaCompraID]);
+            $qtdsRecomendadas = array_keys($probabilidades);
+            $qtdRecomendada = $qtdsRecomendadas[0];
+
+            if($qtdRecomendada > 0)
+                Compra::create(['quantidade' => $qtdRecomendada, 'produto_id' => 1, 'lista_compra_id' => $listaCompraID]);
         }
 
         echo json_encode($retorno);
