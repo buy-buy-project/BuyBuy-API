@@ -94,6 +94,9 @@ class RecomendacaoController extends Controller
             $i++;
         }
 
+        // Cria nova lista
+        $this->insereListaApresentacao();
+
         // Insere produto na lista recomendada
         $listas = ListaCompra::where('consumidor_id', 3)->get();
         if($listas->count()) {
@@ -108,5 +111,57 @@ class RecomendacaoController extends Controller
         }
 
         echo json_encode($retorno);
-    }  
+    }
+
+    /**
+     * Apaga lista existente e insere um nova com 9 produtos a ser recomendada para o consumidor
+     *
+     */
+    private function insereListaApresentacao() {
+        // Apaga caso já exista
+        $listas = ListaCompra::where('consumidor_id', 3)->get();
+
+        if($listas->count() > 0) {
+            foreach($listas as $lista) {
+                $compras = Compra::where('lista_compra_id', $lista->id)->get();
+
+                foreach ($compras as $compra)
+                    $compra->delete();
+
+                $lista->delete();
+            }
+        }
+
+        // Insere lista
+        $listaID = ListaCompra::create(
+            [
+                'data_lista' => date('Y-m-d', strtotime('now')),
+                'consumidor_id' => 3,
+                'recomendada' => 1,
+                'confirmada' => 0
+            ]
+        )->id;
+
+        // Insere 9 compras na lista
+        $compras = [];
+        $compras[] = ['quantidade' => 2, 'produtoID' => 2, 'listaID' => $listaID];
+        $compras[] = ['quantidade' => 3, 'produtoID' => 3, 'listaID' => $listaID];
+        $compras[] = ['quantidade' => 4, 'produtoID' => 4, 'listaID' => $listaID];
+        $compras[] = ['quantidade' => 2, 'produtoID' => 5, 'listaID' => $listaID];
+        $compras[] = ['quantidade' => 1, 'produtoID' => 6, 'listaID' => $listaID];
+        $compras[] = ['quantidade' => 8, 'produtoID' => 7, 'listaID' => $listaID];
+        $compras[] = ['quantidade' => 9, 'produtoID' => 8, 'listaID' => $listaID];
+        $compras[] = ['quantidade' => 5, 'produtoID' => 9, 'listaID' => $listaID];
+        $compras[] = ['quantidade' => 7, 'produtoID' => 10, 'listaID' => $listaID];
+
+        foreach($compras as $compra) {
+            Compra::create(
+                [
+                    'quantidade' => $compra['quantidade'],
+                    'produto_id' => $compra['produtoID'],
+                    'lista_compra_id' => $compra['listaID']
+                ]
+            )->save();
+        }
+    }
 }
